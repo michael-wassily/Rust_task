@@ -281,3 +281,46 @@ fn test_client_add_request() {
         "Server thread panicked or failed to join"
     );
 }
+#[test]
+#[serial]
+fn test_concurrent_add_request(){
+    let server=create_server();
+    let handle=setup_server_thread(server.clone());
+
+    let mut clients=vec![
+        client::Client::new("localhost",8080,1000),
+        client::Client::new("localhost",8080,1000),
+        client::Client::new("localhost",8080,1000),
+    ];
+    //connect clients 
+    for client in clients.iter_mut(){
+        assert!(client.connect().is_ok(),"Failed to connect to the server");
+    }
+
+    //all clients send add request simultaneously
+    let add_request=AddRequest{a:10,b:20};
+    let message=client_message::Message::AddRequest(add_request
+    .clone());
+
+    for client in clients.iter_mut(){
+        assert!(client.send(message.clone()).is_ok(),"Failed to send message");
+    }
+
+    //all clients should recieve correct result 
+    for client in clients.iter_mut(){
+        let response=client.receive();
+        assert!(response.is_ok(),"Failed to receive reponse");
+
+        match response.unwrap().message{
+            Some(server_message::Message::AddResponse(add_response))=>{
+                assert_eq!(add_response.result,30,"Wrong calculation result");
+            }
+            _=>panic!("Expected AddResponse"),
+        }
+    }
+    for client in clients.iter_mut(){
+        assert!(client.disconnect().is_ok());
+    }
+    server.stop();
+    assert!(handle.join().is_ok());
+}
