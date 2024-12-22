@@ -1,4 +1,4 @@
-use crate::message::{EchoMessage,AddRequest,client_message,server_message};
+use crate::message::{client_message, server_message, AddRequest, AddResponse, ClientMessage, EchoMessage, ServerMessage};
 use log::{error, info, warn};
 use prost::Message;
 use std::{
@@ -23,6 +23,8 @@ impl Client {
 
     pub fn handle(&mut self) -> io::Result<bool> {  //changed return type to include connection status
         let mut buffer = [0; 1024];
+        // Try to decode as a ClientMessage
+        
         // Read data from the client
         match self.stream.read(&mut buffer){
             Ok(0)=>{
@@ -30,26 +32,51 @@ impl Client {
                 return Ok(false);
             }
             Ok(bytes_read)=>{
-                if let Ok(message) = EchoMessage::decode(&buffer[..bytes_read]) {
-                    info!("Received: {}", message.content);
-                    // Echo back the message
-                    let payload = message.encode_to_vec();
-                    self.stream.write_all(&payload)?;
-                    self.stream.flush()?;
-                } else {
-                    error!("Failed to decode message");
+                if let Ok(client_msg)=ClientMessage::decode(&buffer[..bytes_read]){
+                    match client_msg.message{
+                        Some(client_message::Message::EchoMessage(echo))=>{
+                            info!("Received Echo: {}", echo.content);
+                            // Send Echo response
+                            let response=ServerMessage{
+                                message:Some(server_message::Message::EchoMessage(echo)),
+                            };
+                            let payload = response.encode_to_vec();
+                            self.stream.write_all(&payload)?;
+                            self.stream.flush()?;
+                        }
+                        Some(client_message::Message::AddRequest(add))=>{
+                            info!("recieved add request:{} + {}",add.a,add.b);
+                            //calculate result and create response
+                            let result=add.a+add.b;
+                            let response=ServerMessage{
+                                message: Some(server_message::Message::AddResponse(AddResponse{
+                                    result
+                                })),                                
+                            };
+                            let payload = response.encode_to_vec();
+                            self.stream.write_all(&payload)?;
+                            self.stream.flush()?;
+                        }
+                    
+                        None =>{
+                            error!("Received empty message");
+                        }
+                    }
                 }
-        
-                Ok(true)
-            }
-            Err(ref e)if e.kind()==ErrorKind::WouldBlock=>{
-                // no data availabe 
-                Ok(true)
-            }
-            Err(e)=>{
-                //other errors
-                Err(e)
-            }
+                    else{
+                        error!("Failed to decode message");
+                    }
+                    Ok(true)
+                    }
+                    
+                Err(ref e)if e.kind()==ErrorKind::WouldBlock=>{
+                        // no data availabe 
+                        Ok(true)
+                }
+                Err(e)=>{
+                    //other errors
+                    Err(e)
+                }
         }
     }
 }
