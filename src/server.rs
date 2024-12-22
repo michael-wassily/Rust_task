@@ -1,4 +1,4 @@
-use crate::message::EchoMessage;
+use crate::message::{EchoMessage,AddRequest,client_message,server_message};
 use log::{error, info, warn};
 use prost::Message;
 use std::{
@@ -21,26 +21,36 @@ impl Client {
         Client { stream }
     }
 
-    pub fn handle(&mut self) -> io::Result<()> {
-        let mut buffer = [0; 512];
+    pub fn handle(&mut self) -> io::Result<bool> {  //changed return type to include connection status
+        let mut buffer = [0; 1024];
         // Read data from the client
-        let bytes_read = self.stream.read(&mut buffer)?;
-        if bytes_read == 0 {
-            info!("Client disconnected.");
-            return Ok(());
+        match self.stream.read(&mut buffer){
+            Ok(0)=>{
+                //connection closed by the client
+                return Ok(false);
+            }
+            Ok(bytes_read)=>{
+                if let Ok(message) = EchoMessage::decode(&buffer[..bytes_read]) {
+                    info!("Received: {}", message.content);
+                    // Echo back the message
+                    let payload = message.encode_to_vec();
+                    self.stream.write_all(&payload)?;
+                    self.stream.flush()?;
+                } else {
+                    error!("Failed to decode message");
+                }
+        
+                Ok(true)
+            }
+            Err(ref e)if e.kind()==ErrorKind::WouldBlock=>{
+                // no data availabe 
+                Ok(true)
+            }
+            Err(e)=>{
+                //other errors
+                Err(e)
+            }
         }
-
-        if let Ok(message) = EchoMessage::decode(&buffer[..bytes_read]) {
-            info!("Received: {}", message.content);
-            // Echo back the message
-            let payload = message.encode_to_vec();
-            self.stream.write_all(&payload)?;
-            self.stream.flush()?;
-        } else {
-            error!("Failed to decode message");
-        }
-
-        Ok(())
     }
 }
 
@@ -73,12 +83,24 @@ impl Server {
                 Ok((stream, addr)) => {
                     info!("New client connected: {}", addr);
 
+                    stream.set_nonblocking(true)?;//set the client stream to non blocking
                     // Handle the client request
                     let mut client = Client::new(stream);
                     while self.is_running.load(Ordering::SeqCst) {
-                        if let Err(e) = client.handle() {
-                            error!("Error handling client: {}", e);
-                            break;
+                        match client.handle(){
+                            Ok(true)=>{
+                                //connection still alive
+                                thread::sleep(Duration::from_millis(10));
+                            }
+                            Ok(false)=>{
+                                //client disconnected
+                                info!("Client disconnected");
+                                break;
+                            }
+                            Err(e)=>{
+                                error!("Error handling client: {}",e);
+                                break;
+                            }
                         }
                     }
                 }
