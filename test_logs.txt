@@ -1,0 +1,96 @@
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Server is running on [::1]:8080
+[2024-12-22T22:30:47Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53487
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Active connections: 1
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] recieved add request:10 + 20
+[2024-12-22T22:30:47Z INFO  client_test::client] Received 4 bytes from the server
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Shutdown signal sent.
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53487 stopped
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Server stopped.
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Server is running on [::1]:8080
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Shutdown signal sent.
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Server stopped.
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Server is running on [::1]:8080
+[2024-12-22T22:30:47Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53489
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Active connections: 1
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Received Echo: Hello, World!
+[2024-12-22T22:30:47Z INFO  client_test::client] Received 17 bytes from the server
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Shutdown signal sent.
+[2024-12-22T22:30:47Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53489 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server stopped.
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server is running on [::1]:8080
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53490
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 1
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53491
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 2
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] recieved add request:10 + 20
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 4 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53492
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 3
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] recieved add request:10 + 20
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 4 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] recieved add request:10 + 20
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 4 bytes from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Shutdown signal sent.
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53490 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53491 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53492 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server stopped.
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server is running on [::1]:8080
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53493
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 1
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53494
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 2
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Hello, World!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 17 bytes from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53495
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 3
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Hello, World!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 17 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Hello, World!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 17 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: How are you?
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 16 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: How are you?
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 16 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: How are you?
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 16 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Goodbye!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 12 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Goodbye!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 12 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Goodbye!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 12 bytes from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Shutdown signal sent.
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53494 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53493 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53495 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server stopped.
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server is running on [::1]:8080
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] New client connected: [::1]:53497
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Active connections: 1
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Hello, World!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 17 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: How are you?
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 16 bytes from the server
+[2024-12-22T22:30:48Z INFO  client_test::client] Receiving message from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Received Echo: Goodbye!
+[2024-12-22T22:30:48Z INFO  client_test::client] Received 12 bytes from the server
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Shutdown signal sent.
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Client handler thread for [::1]:53497 stopped
+[2024-12-22T22:30:48Z INFO  embedded_recruitment_task::server] Server stopped.
