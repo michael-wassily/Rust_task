@@ -84,25 +84,33 @@ impl Server {
                     info!("New client connected: {}", addr);
 
                     stream.set_nonblocking(true)?;//set the client stream to non blocking
-                    // Handle the client request
-                    let mut client = Client::new(stream);
-                    while self.is_running.load(Ordering::SeqCst) {
-                        match client.handle(){
-                            Ok(true)=>{
-                                //connection still alive
-                                thread::sleep(Duration::from_millis(10));
-                            }
-                            Ok(false)=>{
-                                //client disconnected
-                                info!("Client disconnected");
-                                break;
-                            }
-                            Err(e)=>{
-                                error!("Error handling client: {}",e);
-                                break;
+                    
+                    //create a new arc clone for this client's thread 
+                    let is_running=Arc::clone(&self.is_running);
+                    //spawn a new thread for this client
+                    thread::spawn(move||{
+                        let mut client = Client::new(stream);
+                        while is_running.load(Ordering::SeqCst) {
+                            match client.handle(){
+                                Ok(true)=>{
+                                    //connection still alive
+                                    thread::sleep(Duration::from_millis(10));
+                                }
+                                Ok(false)=>{
+                                    //client disconnected
+                                    info!("Client disconnected");
+                                    break;
+                                }
+                                Err(e)=>{
+                                    error!("Error handling client {}: {}",addr,e);
+                                    break;
+                                }
                             }
                         }
-                    }
+                        info!("Client handler thread for {} stopped",addr);
+                    });
+                    
+                    
                 }
                 Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
                     // No incoming connections, sleep briefly to reduce CPU usage
