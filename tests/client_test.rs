@@ -3,6 +3,7 @@ use embedded_recruitment_task::{
     server::Server,
 };
 use serial_test::serial;
+use tests::init_logger;
 use std::{
     sync::Arc,
     thread::{self, JoinHandle},
@@ -20,9 +21,36 @@ fn create_server() -> Arc<Server> {
     Arc::new(Server::new("localhost:8080").expect("Failed to start server"))
 }
 
+mod tests{
+    
+    use std::{fs::OpenOptions, sync::Once};
+    use env_logger::{Builder, Target};
+
+    //init logger only once for all tests
+    static INIT:Once=Once::new();
+
+   pub fn init_logger(){
+        INIT.call_once(||{
+            let log_file =OpenOptions::new()
+            .create(true)
+            .write(true)
+            .append(true)
+            .open("test_logs.txt")
+            .expect("Failed to open log file");
+        
+        Builder::new()
+        .target(Target::Pipe(Box::new(log_file)))
+        .filter_level(log::LevelFilter::Info)
+        .init();
+    });
+}
+
+}
+
 #[test]
 #[serial]
 fn test_client_connection() {
+    init_logger();
     // Set up the server in a separate thread
     let server = create_server();
     let handle = setup_server_thread(server.clone());
@@ -48,6 +76,7 @@ fn test_client_connection() {
 #[test]
 #[serial]
 fn test_client_echo_message() {
+    init_logger();
     // Set up the server in a separate thread
     let server = create_server();
     let handle = setup_server_thread(server.clone());
@@ -99,6 +128,7 @@ fn test_client_echo_message() {
 #[serial]
 //#[ignore = "please remove ignore and fix this test"]
 fn test_multiple_echo_messages() {
+    init_logger();
     // Set up the server in a separate thread
     let server = create_server();
     let handle = setup_server_thread(server.clone());
@@ -159,6 +189,7 @@ fn test_multiple_echo_messages() {
 #[serial]
 //#[ignore = "please remove ignore and fix this test"]
 fn test_multiple_clients() {
+    init_logger();
     // Set up the server in a separate thread
     let server = create_server();
     let handle = setup_server_thread(server.clone());
@@ -233,6 +264,7 @@ fn test_multiple_clients() {
 #[serial]
 //#[ignore = "please remove ignore and fix this test"]
 fn test_client_add_request() {
+    init_logger();
     // Set up the server in a separate thread
     let server = create_server();
     let handle = setup_server_thread(server.clone());
@@ -284,6 +316,7 @@ fn test_client_add_request() {
 #[test]
 #[serial]
 fn test_concurrent_add_request(){
+    init_logger();
     let server=create_server();
     let handle=setup_server_thread(server.clone());
 
