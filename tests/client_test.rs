@@ -2,6 +2,7 @@ use embedded_recruitment_task::{
     message::{client_message, server_message, AddRequest, EchoMessage},
     server::Server,
 };
+use serial_test::serial;
 use std::{
     sync::Arc,
     thread::{self, JoinHandle},
@@ -20,6 +21,7 @@ fn create_server() -> Arc<Server> {
 }
 
 #[test]
+#[serial]
 fn test_client_connection() {
     // Set up the server in a separate thread
     let server = create_server();
@@ -44,6 +46,7 @@ fn test_client_connection() {
 }
 
 #[test]
+#[serial]
 fn test_client_echo_message() {
     // Set up the server in a separate thread
     let server = create_server();
@@ -93,6 +96,7 @@ fn test_client_echo_message() {
 }
 
 #[test]
+#[serial]
 //#[ignore = "please remove ignore and fix this test"]
 fn test_multiple_echo_messages() {
     // Set up the server in a separate thread
@@ -152,7 +156,8 @@ fn test_multiple_echo_messages() {
 }
 
 #[test]
-#[ignore = "please remove ignore and fix this test"]
+#[serial]
+//#[ignore = "please remove ignore and fix this test"]
 fn test_multiple_clients() {
     // Set up the server in a separate thread
     let server = create_server();
@@ -225,7 +230,8 @@ fn test_multiple_clients() {
 }
 
 #[test]
-#[ignore = "please remove ignore and fix this test"]
+#[serial]
+//#[ignore = "please remove ignore and fix this test"]
 fn test_client_add_request() {
     // Set up the server in a separate thread
     let server = create_server();
