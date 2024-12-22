@@ -6,7 +6,7 @@ use std::{
     net::{TcpListener, TcpStream},
     sync::{
         atomic::{AtomicBool, Ordering},
-        Arc,
+        Arc,Mutex,
     },
     thread,
     time::Duration,
@@ -27,73 +27,86 @@ impl Client {
         
         // Read data from the client
         match self.stream.read(&mut buffer){
-            Ok(0)=>{
-                //connection closed by the client
-                return Ok(false);
-            }
+            Ok(0)=>return Ok(false),//connection closed by the client
+
             Ok(bytes_read)=>{
-                if let Ok(client_msg)=ClientMessage::decode(&buffer[..bytes_read]){
-                    match client_msg.message{
-                        Some(client_message::Message::EchoMessage(echo))=>{
-                            info!("Received Echo: {}", echo.content);
-                            // Send Echo response
-                            let response=ServerMessage{
-                                message:Some(server_message::Message::EchoMessage(echo)),
-                            };
-                            let payload = response.encode_to_vec();
-                            self.stream.write_all(&payload)?;
-                            self.stream.flush()?;
-                        }
-                        Some(client_message::Message::AddRequest(add))=>{
-                            info!("recieved add request:{} + {}",add.a,add.b);
-                            //calculate result and create response
-                            let result=add.a+add.b;
-                            let response=ServerMessage{
-                                message: Some(server_message::Message::AddResponse(AddResponse{
-                                    result
-                                })),                                
-                            };
-                            let payload = response.encode_to_vec();
-                            self.stream.write_all(&payload)?;
-                            self.stream.flush()?;
-                        }
-                    
-                        None =>{
-                            error!("Received empty message");
+                match ClientMessage::decode(&buffer[..bytes_read]){
+                    Ok(client_msg)=>{
+                        match client_msg.message{
+                            Some(client_message::Message::EchoMessage(echo))=>{
+                                info!("Received Echo: {}", echo.content);
+                                // Send Echo response
+                                self.handle_echo(echo)
+                            }
+                            Some(client_message::Message::AddRequest(add))=>{
+                                info!("recieved add request:{} + {}",add.a,add.b);
+                                //calculate result and create response
+                                self.handle_add(add)
+                                
+                            }
+                        
+                            None =>{
+                                error!("Received empty message");
+                                Ok(true)
+                            }
                         }
                     }
-                }
-                    else{
-                        error!("Failed to decode message");
-                    }
-                    Ok(true)
-                    }
-                    
-                Err(ref e)if e.kind()==ErrorKind::WouldBlock=>{
-                        // no data availabe 
+                    Err(e)=>{
+                        error!("Failed to decode message:{}",e);
                         Ok(true)
+                    }
+                    
                 }
-                Err(e)=>{
-                    //other errors
-                    Err(e)
-                }
+            }
+                    
+            Err(ref e)if e.kind()==ErrorKind::WouldBlock=>Ok(true),// no data availabel
+            Err(e)=>Err(e),//other errors
+
         }
+    }
+    fn handle_echo(&mut self,echo:EchoMessage)->io::Result<bool>{
+        let response=ServerMessage{
+            message:Some(server_message::Message::EchoMessage(echo)),
+        };
+        self.send_response(response)
+    }
+    fn handle_add(&mut self,add:AddRequest)->io::Result<bool>{
+        let result=add.a+add.b;
+         let response=ServerMessage{
+            message: Some(server_message::Message::AddResponse(AddResponse{
+              result
+             })),                              
+         };
+          self.send_response(response)  
+    }
+    fn send_response(&mut self,response:ServerMessage)->io::Result<bool>{
+        let payload = response.encode_to_vec();
+        self.stream.write_all(&payload)?;
+        self.stream.flush()?;
+        Ok(true)
     }
 }
 
 pub struct Server {
     listener: TcpListener,
     is_running: Arc<AtomicBool>,
+    state: Arc<Mutex<ServerState>>,//add shared state for data consistancy and race conditions
 }
-
+pub struct ServerState{
+    connection_count:i32,
+}
 impl Server {
     /// Creates a new server instance
     pub fn new(addr: &str) -> io::Result<Self> {
         let listener = TcpListener::bind(addr)?;
         let is_running = Arc::new(AtomicBool::new(false));
+        let state=Arc::new(Mutex::new(ServerState{
+            connection_count:0,
+        }));
         Ok(Server {
             listener,
             is_running,
+            state,
         })
     }
 
@@ -110,10 +123,19 @@ impl Server {
                 Ok((stream, addr)) => {
                     info!("New client connected: {}", addr);
 
+                    //update connection count safely
+                    {
+                        let mut state=self.state.lock().unwrap();
+                        state.connection_count+=1;
+                        info!("Active connections: {}",state.connection_count);
+                    }
+
                     stream.set_nonblocking(true)?;//set the client stream to non blocking
                     
                     //create a new arc clone for this client's thread 
                     let is_running=Arc::clone(&self.is_running);
+                    //clone the state Arc of the thread
+                    let thread_state=Arc::clone(&self.state);
                     //spawn a new thread for this client
                     thread::spawn(move||{
                         let mut client = Client::new(stream);
@@ -134,6 +156,9 @@ impl Server {
                                 }
                             }
                         }
+                        //decrease connection count when disconnected 
+                        let mut state= thread_state.lock().unwrap();
+                        state.connection_count-=1;
                         info!("Client handler thread for {} stopped",addr);
                     });
                     
