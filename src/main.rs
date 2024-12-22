@@ -1,5 +1,5 @@
 use embedded_recruitment_task::server::Server;
-use log::{info,error};
+use log::info;
 use std::io;
 
 fn main()->io::Result<()>{
